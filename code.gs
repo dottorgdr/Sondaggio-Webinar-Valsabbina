@@ -8,14 +8,21 @@ const HEADERS = [
   'Risposta'
 ];
 
-function doGet(e) {
+function doGet() {
   return ContentService
-    .createTextOutput(JSON.stringify({ ok: true, message: 'Web App attiva' }))
+    .createTextOutput(JSON.stringify({
+      ok: true,
+      message: 'Web App attiva'
+    }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doPost(e) {
   try {
+    if (!e || !e.postData || !e.postData.contents) {
+      throw new Error('Nessun dato ricevuto.');
+    }
+
     const data = JSON.parse(e.postData.contents);
 
     appendSurvey(
@@ -28,7 +35,9 @@ function doPost(e) {
     );
 
     return ContentService
-      .createTextOutput(JSON.stringify({ ok: true }))
+      .createTextOutput(JSON.stringify({
+        ok: true
+      }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
@@ -64,5 +73,9 @@ function appendSurvey(answers, ua, tsISO) {
 
   SpreadsheetApp.flush();
 
-  return { ok: true };
+  return {
+    ok: true,
+    sheetName: sh.getName(),
+    lastRow: sh.getLastRow()
+  };
 }
