@@ -8,11 +8,37 @@ const HEADERS = [
   'Risposta'
 ];
 
-function doGet() {
-  return HtmlService
-    .createHtmlOutputFromFile('index')
-    .setTitle('Sondaggio')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+function doGet(e) {
+  return ContentService
+    .createTextOutput(JSON.stringify({ ok: true, message: 'Web App attiva' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+
+    appendSurvey(
+      {
+        q1: data.q1 || '',
+        email: data.email || ''
+      },
+      data.ua || '',
+      data.tsISO || new Date().toISOString()
+    );
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ ok: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        ok: false,
+        error: err.message || String(err)
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 function appendSurvey(answers, ua, tsISO) {
