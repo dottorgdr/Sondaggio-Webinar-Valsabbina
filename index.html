@@ -330,39 +330,24 @@
       submitBtn.disabled = true;
       show('Invio in corso…');
 
-      const hiddenForm = document.createElement('form');
-      hiddenForm.method = 'POST';
-      hiddenForm.action = WEB_APP_URL;
-      hiddenForm.target = 'hidden_iframe';
-      hiddenForm.style.display = 'none';
+     const params = new URLSearchParams({
+  q1: answer,
+  email: answer === 'SI' ? email : '',
+  ua: navigator.userAgent,
+  tsISO: new Date().toISOString()
+});
 
-      const payload = {
-        q1: answer,
-        email: answer === 'SI' ? email : '',
-        ua: navigator.userAgent,
-        tsISO: new Date().toISOString()
-      };
+const iframe = document.querySelector('iframe[name="hidden_iframe"]');
+iframe.src = WEB_APP_URL + '?' + params.toString();
 
-      Object.keys(payload).forEach(key => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = payload[key];
-        hiddenForm.appendChild(input);
-      });
-
-      document.body.appendChild(hiddenForm);
-      hiddenForm.submit();
-
-      setTimeout(() => {
-        show('Grazie! Risposta registrata.', 'ok');
-        submitBtn.disabled = false;
-        form.reset();
-        emailSection.classList.add('hidden');
-        emailInput.removeAttribute('required');
-        emailInput.value = '';
-        hiddenForm.remove();
-      }, 1200);
+setTimeout(() => {
+  show('Grazie! Risposta registrata.', 'ok');
+  submitBtn.disabled = false;
+  form.reset();
+  emailSection.classList.add('hidden');
+  emailInput.removeAttribute('required');
+  emailInput.value = '';
+}, 1500);
     });
 
     resetBtn.addEventListener('click', () => {
