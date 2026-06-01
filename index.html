@@ -336,8 +336,8 @@ const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyeQV6lF5jDj8SRoFvB
   tsISO: new Date().toISOString()
 });
 
-const iframe = document.querySelector('iframe[name="hidden_iframe"]');
-iframe.src = WEB_APP_URL + '?' + params.toString();
+window._lastBeacon = new Image();
+window._lastBeacon.src = WEB_APP_URL + '?' + params.toString() + '&cachebuster=' + Date.now();
 
 setTimeout(() => {
   show('Grazie! Risposta registrata.', 'ok');
