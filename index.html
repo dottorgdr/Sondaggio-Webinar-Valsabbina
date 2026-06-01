@@ -333,34 +333,7 @@
       submitBtn.disabled = true;
       show('Invio in corso…');
 
-   fetch(WEB_APP_URL, {
-  method: 'POST',
-  mode: 'no-cors',
-  headers: {
-    'Content-Type': 'text/plain;charset=utf-8'
-  },
-  body: JSON.stringify({
-    q1: answer,
-    email: answer === 'SI' ? email : '',
-    ua: navigator.userAgent,
-    tsISO: new Date().toISOString()
-  })
-})
-.then(() => {
-  show('Grazie! Risposta registrata.', 'ok');
-  submitBtn.disabled = false;
-  form.reset();
-  emailSection.classList.add('hidden');
-  emailInput.removeAttribute('required');
-  emailInput.value = '';
-})
-.catch(err => {
-  console.error(err);
-  show('Errore: ' + (err.message || err), 'err');
-  submitBtn.disabled = false;
-});
-
-Quindi la parte finale diventa:
+ 
 
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxMKbuV49xq2U6fgmua4U34hfLxllXLHX0atiKat1Bdj9Zx70igeUj1GLeopsvoNK4UKA/exec';
 
