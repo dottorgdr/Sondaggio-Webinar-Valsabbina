@@ -8,45 +8,38 @@ const HEADERS = [
   'Risposta'
 ];
 
-function doGet() {
+function doGet(e) {
   return ContentService
-    .createTextOutput(JSON.stringify({
-      ok: true,
-      message: 'Web App attiva'
-    }))
-    .setMimeType(ContentService.MimeType.JSON);
+    .createTextOutput('Web App attiva')
+    .setMimeType(ContentService.MimeType.TEXT);
 }
 
 function doPost(e) {
   try {
-    if (!e || !e.postData || !e.postData.contents) {
-      throw new Error('Nessun dato ricevuto.');
-    }
+    const data = e && e.parameter ? e.parameter : {};
 
-    const data = JSON.parse(e.postData.contents);
+    const q1 = data.q1 || '';
+    const email = data.email || '';
+    const ua = data.ua || '';
+    const tsISO = data.tsISO || new Date().toISOString();
 
-    appendSurvey(
+    const result = appendSurvey(
       {
-        q1: data.q1 || '',
-        email: data.email || ''
+        q1: q1,
+        email: email
       },
-      data.ua || '',
-      data.tsISO || new Date().toISOString()
+      ua,
+      tsISO
     );
 
     return ContentService
-      .createTextOutput(JSON.stringify({
-        ok: true
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
+      .createTextOutput('OK - scritto riga ' + result.lastRow)
+      .setMimeType(ContentService.MimeType.TEXT);
 
   } catch (err) {
     return ContentService
-      .createTextOutput(JSON.stringify({
-        ok: false,
-        error: err.message || String(err)
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
+      .createTextOutput('ERRORE: ' + (err.message || String(err)))
+      .setMimeType(ContentService.MimeType.TEXT);
   }
 }
 
@@ -75,7 +68,17 @@ function appendSurvey(answers, ua, tsISO) {
 
   return {
     ok: true,
-    sheetName: sh.getName(),
     lastRow: sh.getLastRow()
   };
+}
+
+function testAppend() {
+  appendSurvey(
+    {
+      q1: 'TEST',
+      email: 'test@example.com'
+    },
+    'manual-test',
+    new Date().toISOString()
+  );
 }
