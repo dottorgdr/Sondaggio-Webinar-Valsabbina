@@ -217,7 +217,11 @@
         timestamp: new Date().toISOString()
       });
 
-      window.location.href = WEB_APP_URL + '?' + params.toString();
+const finalUrl = WEB_APP_URL + '?' + params.toString();
+
+alert(finalUrl);
+
+window.location.href = finalUrl;
     });
 
     form.addEventListener('reset', () => {
