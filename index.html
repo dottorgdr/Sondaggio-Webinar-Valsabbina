@@ -333,44 +333,63 @@
       submitBtn.disabled = true;
       show('Invio in corso…');
 
-      fetch(WEB_APP_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
-        },
-        body: JSON.stringify({
-          q1: answer,
-          email: answer === 'SI' ? email : '',
-          ua: navigator.userAgent,
-          tsISO: new Date().toISOString()
-        })
-      })
-      .then(response => response.text())
-      .then(text => {
-        let res;
+   fetch(WEB_APP_URL, {
+  method: 'POST',
+  mode: 'no-cors',
+  headers: {
+    'Content-Type': 'text/plain;charset=utf-8'
+  },
+  body: JSON.stringify({
+    q1: answer,
+    email: answer === 'SI' ? email : '',
+    ua: navigator.userAgent,
+    tsISO: new Date().toISOString()
+  })
+})
+.then(() => {
+  show('Grazie! Risposta registrata.', 'ok');
+  submitBtn.disabled = false;
+  form.reset();
+  emailSection.classList.add('hidden');
+  emailInput.removeAttribute('required');
+  emailInput.value = '';
+})
+.catch(err => {
+  console.error(err);
+  show('Errore: ' + (err.message || err), 'err');
+  submitBtn.disabled = false;
+});
 
-        try {
-          res = JSON.parse(text);
-        } catch (e) {
-          throw new Error('Risposta non valida dal server: ' + text);
-        }
+Quindi la parte finale diventa:
 
-        if (!res.ok) {
-          throw new Error(res.error || 'Errore sconosciuto');
-        }
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxMKbuV49xq2U6fgmua4U34hfLxllXLHX0atiKat1Bdj9Zx70igeUj1GLeopsvoNK4UKA/exec';
 
-        show('Grazie! Risposta registrata.', 'ok');
-        submitBtn.disabled = false;
-        form.reset();
-        emailSection.classList.add('hidden');
-        emailInput.removeAttribute('required');
-        emailInput.value = '';
-      })
-      .catch(err => {
-        console.error(err);
-        show('Errore: ' + (err.message || err), 'err');
-        submitBtn.disabled = false;
-      });
+fetch(WEB_APP_URL, {
+  method: 'POST',
+  mode: 'no-cors',
+  headers: {
+    'Content-Type': 'text/plain;charset=utf-8'
+  },
+  body: JSON.stringify({
+    q1: answer,
+    email: answer === 'SI' ? email : '',
+    ua: navigator.userAgent,
+    tsISO: new Date().toISOString()
+  })
+})
+.then(() => {
+  show('Grazie! Risposta registrata.', 'ok');
+  submitBtn.disabled = false;
+  form.reset();
+  emailSection.classList.add('hidden');
+  emailInput.removeAttribute('required');
+  emailInput.value = '';
+})
+.catch(err => {
+  console.error(err);
+  show('Errore: ' + (err.message || err), 'err');
+  submitBtn.disabled = false;
+});
     });
 
     resetBtn.addEventListener('click', () => {
