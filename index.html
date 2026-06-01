@@ -1,1 +1,366 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1C4CAC" />
+  <title>Sondaggio</title>
 
+  <style>
+    :root{
+      --bg:#1C4CAC;
+      --card:#FFCC99;
+      --border:#e6b77a;
+      --text:#000000;
+      --muted:#333333;
+      --accent:#004080;
+      --ok:#007f00;
+      --err:#c00000;
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Arial,sans-serif;
+      font-size:17px;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.35;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .wrap{
+      min-height:100%;
+      display:grid;
+      align-items:center;
+      justify-items:center;
+      padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));
+    }
+
+    .card{
+      width:100%;
+      max-width:820px;
+      margin-inline:auto;
+      background:var(--card);
+      border:2px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:0 8px 30px rgba(0,0,0,0.25);
+      overflow:hidden;
+    }
+
+    header{
+      padding:24px 20px 16px;
+      border-bottom:2px solid var(--border);
+      text-align:center;
+    }
+
+    h1{
+      margin:0 0 10px;
+      font-size:clamp(22px,5vw,28px);
+      font-weight:800;
+      line-height:1.3;
+    }
+
+    .subtitle{
+      color:var(--muted);
+      font-size:clamp(16px,3.8vw,20px);
+      font-style:italic;
+      max-width:90%;
+      margin:0 auto;
+      line-height:1.4;
+    }
+
+    .thankyou{
+      text-align:center;
+      font-weight:700;
+      font-size:clamp(18px,4.5vw,24px);
+      margin:24px 0 8px;
+    }
+
+    form{padding:20px}
+
+    fieldset{
+      border:0;
+      margin:0 0 20px;
+      padding:6px 0 2px;
+    }
+
+    legend{
+      font-weight:700;
+      margin:0 0 12px;
+      font-size:clamp(18px,4.4vw,20px);
+      line-height:1.4;
+      color:var(--text);
+    }
+
+    .grid{
+      display:grid;
+      gap:14px;
+      grid-template-columns:1fr;
+    }
+
+    @media (min-width:700px){
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+
+    label.opt{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      padding:18px 16px;
+      min-height:64px;
+      border:2px solid var(--border);
+      border-radius:16px;
+      background:#ffe5cc;
+      font-size:clamp(18px,4.8vw,20px);
+      line-height:1.3;
+      white-space:normal;
+      word-break:break-word;
+      cursor:pointer;
+      transition:border-color .15s ease,background-color .15s ease,transform .1s ease;
+    }
+
+    label.opt:active{transform:scale(.985)}
+    label.opt:has(input:checked){
+      border-color:var(--accent);
+      background:#ffd9b3;
+    }
+
+    input[type="radio"]{
+      width:28px;
+      height:28px;
+      accent-color:var(--accent);
+      flex:0 0 auto;
+      margin-top:1px;
+    }
+
+    .email-field{
+      width:100%;
+      padding:16px;
+      font-size:18px;
+      border:2px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+      color:#000;
+      outline:none;
+    }
+
+    .email-field:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(0,64,128,.18);
+    }
+
+    .email-help{
+      margin-top:8px;
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .hidden{
+      display:none;
+    }
+
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      padding:10px 0 0;
+    }
+
+    button{
+      appearance:none;
+      border:0;
+      border-radius:12px;
+      padding:16px 18px;
+      font-weight:700;
+      cursor:pointer;
+      min-height:52px;
+      flex:1 1 180px;
+      font-size:17px;
+    }
+
+    .primary{background:var(--accent);color:#fff}
+    .ghost{background:transparent;border:2px solid var(--accent);color:var(--accent)}
+
+    #status{
+      padding:16px 20px;
+      border-top:2px solid var(--border);
+      font-size:16px;
+      color:var(--muted);
+      background:#ffddaa;
+    }
+
+    #status.ok{color:var(--ok)}
+    #status.err{color:var(--err)}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card" role="region" aria-labelledby="title">
+
+      <header>
+        <h1 id="title">Sondaggio<br>PARTECIPAZIONE AL WEBINAR SULLA PREVIDENZA COMPLEMENTARE</h1>
+
+        <p class="subtitle">
+          Un momento formativo sulle novità legislative e le possibilità per gli aderenti.<br>
+          Tenuto da Previbank con l'intervento tecnico di Gian Paolo Bottanelli.
+        </p>
+
+        <h2 class="thankyou">L'evento si terrà solo in caso di una sufficiente adesione</h2>
+        <h3 class="thankyou">Entro alcuni giorni verrà inviato, a chi darà conferma con questo sondaggio, il link di partecipazione</h3>
+      </header>
+
+      <form id="surveyForm" novalidate>
+
+        <fieldset>
+          <legend>
+            Parteciperai al webinar sulla previdenza complementare organizzato dal Coordinamento First Cisl Banca Valsabbina in collaborazione con Previbank il 16 giugno alle 17:00?
+          </legend>
+
+          <div class="grid">
+            <label class="opt">
+              <input type="radio" name="q1" value="SI">
+              <span>Sì</span>
+            </label>
+
+            <label class="opt">
+              <input type="radio" name="q1" value="NO">
+              <span>No</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset id="emailSection" class="hidden">
+          <legend>Indirizzo e-mail per ricevere il link di partecipazione</legend>
+
+          <input
+            class="email-field"
+            type="email"
+            id="email"
+            name="email"
+            placeholder="nome.cognome@email.it"
+          >
+
+          <div class="email-help">
+            Inserisci un indirizzo e-mail valido: verrà usato solo per l’invio del link di partecipazione.
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button class="primary" type="submit" id="submitBtn">Invia</button>
+          <button class="ghost" type="reset" id="resetBtn">Reset</button>
+        </div>
+
+      </form>
+
+      <div id="status" role="status" aria-live="polite"></div>
+
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('surveyForm');
+    const statusEl = document.getElementById('status');
+    const submitBtn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const emailSection = document.getElementById('emailSection');
+    const emailInput = document.getElementById('email');
+
+    function show(msg, cls){
+      statusEl.textContent = msg || '';
+      statusEl.className = cls || '';
+    }
+
+    function getSingleValue(name){
+      const el = document.querySelector(`input[name="${name}"]:checked`);
+      return el ? el.value : '';
+    }
+
+    function isValidEmail(email){
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    document.querySelectorAll('input[name="q1"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        show('');
+
+        if (radio.value === 'SI' && radio.checked) {
+          emailSection.classList.remove('hidden');
+          emailInput.setAttribute('required', 'required');
+        }
+
+        if (radio.value === 'NO' && radio.checked) {
+          emailSection.classList.add('hidden');
+          emailInput.removeAttribute('required');
+          emailInput.value = '';
+        }
+      });
+    });
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+
+      const answer = getSingleValue('q1');
+      const email = emailInput.value.trim();
+
+      if(!answer){
+        show('Seleziona una risposta.', 'err');
+        return;
+      }
+
+      if(answer === 'SI'){
+        if(!email){
+          show('Per partecipare è necessario indicare un indirizzo e-mail.', 'err');
+          emailSection.classList.remove('hidden');
+          emailInput.focus();
+          return;
+        }
+
+        if(!isValidEmail(email)){
+          show('Inserisci un indirizzo e-mail valido.', 'err');
+          emailSection.classList.remove('hidden');
+          emailInput.focus();
+          return;
+        }
+      }
+
+      submitBtn.disabled = true;
+      show('Invio in corso…');
+
+      google.script.run
+        .withSuccessHandler(() => {
+          show('Grazie! Risposta registrata.', 'ok');
+          submitBtn.disabled = false;
+          form.reset();
+          emailSection.classList.add('hidden');
+          emailInput.removeAttribute('required');
+          emailInput.value = '';
+        })
+        .withFailureHandler(err => {
+          console.error(err);
+          show('Errore: ' + (err?.message || err || 'sconosciuto'), 'err');
+          submitBtn.disabled = false;
+        })
+        .appendSurvey(
+          {
+            q1: answer,
+            email: answer === 'SI' ? email : ''
+          },
+          navigator.userAgent,
+          new Date().toISOString()
+        );
+    });
+
+    resetBtn.addEventListener('click', () => {
+      show('');
+      emailSection.classList.add('hidden');
+      emailInput.removeAttribute('required');
+      emailInput.value = '';
+    });
+  </script>
+</body>
+</html>
