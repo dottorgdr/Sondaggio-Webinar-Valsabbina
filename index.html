@@ -331,28 +331,35 @@
       submitBtn.disabled = true;
       show('Invio in corso…');
 
-      google.script.run
-        .withSuccessHandler(() => {
-          show('Grazie! Risposta registrata.', 'ok');
-          submitBtn.disabled = false;
-          form.reset();
-          emailSection.classList.add('hidden');
-          emailInput.removeAttribute('required');
-          emailInput.value = '';
-        })
-        .withFailureHandler(err => {
-          console.error(err);
-          show('Errore: ' + (err?.message || err || 'sconosciuto'), 'err');
-          submitBtn.disabled = false;
-        })
-        .appendSurvey(
-          {
-            q1: answer,
-            email: answer === 'SI' ? email : ''
-          },
-          navigator.userAgent,
-          new Date().toISOString()
-        );
+     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfyc.../exec';
+
+fetch(WEB_APP_URL, {
+  method: 'POST',
+  body: JSON.stringify({
+    q1: answer,
+    email: answer === 'SI' ? email : '',
+    ua: navigator.userAgent,
+    tsISO: new Date().toISOString()
+  })
+})
+.then(response => response.json())
+.then(res => {
+  if (!res.ok) {
+    throw new Error(res.error || 'Errore sconosciuto');
+  }
+
+  show('Grazie! Risposta registrata.', 'ok');
+  submitBtn.disabled = false;
+  form.reset();
+  emailSection.classList.add('hidden');
+  emailInput.removeAttribute('required');
+  emailInput.value = '';
+})
+.catch(err => {
+  console.error(err);
+  show('Errore: ' + (err.message || err), 'err');
+  submitBtn.disabled = false;
+});
     });
 
     resetBtn.addEventListener('click', () => {
