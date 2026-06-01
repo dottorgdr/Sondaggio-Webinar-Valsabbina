@@ -159,9 +159,7 @@
       color:var(--muted);
     }
 
-    .hidden{
-      display:none;
-    }
+    .hidden{display:none}
 
     .actions{
       display:flex;
@@ -199,6 +197,8 @@
 </head>
 
 <body>
+  <iframe name="hidden_iframe" style="display:none;"></iframe>
+
   <div class="wrap">
     <div class="card" role="region" aria-labelledby="title">
 
@@ -215,7 +215,6 @@
       </header>
 
       <form id="surveyForm" novalidate>
-
         <fieldset>
           <legend>
             Parteciperai al webinar sulla previdenza complementare organizzato dal Coordinamento First Cisl Banca Valsabbina in collaborazione con Previbank il 16 giugno alle 17:00?
@@ -254,11 +253,9 @@
           <button class="primary" type="submit" id="submitBtn">Invia</button>
           <button class="ghost" type="reset" id="resetBtn">Reset</button>
         </div>
-
       </form>
 
       <div id="status" role="status" aria-live="polite"></div>
-
     </div>
   </div>
 
@@ -333,36 +330,39 @@
       submitBtn.disabled = true;
       show('Invio in corso…');
 
- 
+      const hiddenForm = document.createElement('form');
+      hiddenForm.method = 'POST';
+      hiddenForm.action = WEB_APP_URL;
+      hiddenForm.target = 'hidden_iframe';
+      hiddenForm.style.display = 'none';
 
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxMKbuV49xq2U6fgmua4U34hfLxllXLHX0atiKat1Bdj9Zx70igeUj1GLeopsvoNK4UKA/exec';
+      const payload = {
+        q1: answer,
+        email: answer === 'SI' ? email : '',
+        ua: navigator.userAgent,
+        tsISO: new Date().toISOString()
+      };
 
-fetch(WEB_APP_URL, {
-  method: 'POST',
-  mode: 'no-cors',
-  headers: {
-    'Content-Type': 'text/plain;charset=utf-8'
-  },
-  body: JSON.stringify({
-    q1: answer,
-    email: answer === 'SI' ? email : '',
-    ua: navigator.userAgent,
-    tsISO: new Date().toISOString()
-  })
-})
-.then(() => {
-  show('Grazie! Risposta registrata.', 'ok');
-  submitBtn.disabled = false;
-  form.reset();
-  emailSection.classList.add('hidden');
-  emailInput.removeAttribute('required');
-  emailInput.value = '';
-})
-.catch(err => {
-  console.error(err);
-  show('Errore: ' + (err.message || err), 'err');
-  submitBtn.disabled = false;
-});
+      Object.keys(payload).forEach(key => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = payload[key];
+        hiddenForm.appendChild(input);
+      });
+
+      document.body.appendChild(hiddenForm);
+      hiddenForm.submit();
+
+      setTimeout(() => {
+        show('Grazie! Risposta registrata.', 'ok');
+        submitBtn.disabled = false;
+        form.reset();
+        emailSection.classList.add('hidden');
+        emailInput.removeAttribute('required');
+        emailInput.value = '';
+        hiddenForm.remove();
+      }, 1200);
     });
 
     resetBtn.addEventListener('click', () => {
