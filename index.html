@@ -211,13 +211,13 @@
         }
       }
 
-      const params = new URLSearchParams({
-        risposta: answer,
-        email: answer === 'SI' ? email : '',
-        timestamp: new Date().toISOString()
-      });
+    const params = new URLSearchParams({
+  risposta: answer,
+  email: answer === 'SI' ? email : '',
+  timestamp: new Date().toISOString()
+});
 
-const finalUrl = WEB_APP_URL + '?' + params.toString();
+window.location.href = WEB_APP_URL + '?' + params.toString();
 
 alert(finalUrl);
 
