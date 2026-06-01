@@ -263,6 +263,8 @@
   </div>
 
   <script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxMKbuV49xq2U6fgmua4U34hfLxllXLHX0atiKat1Bdj9Zx70igeUj1GLeopsvoNK4UKA/exec';
+
     const form = document.getElementById('surveyForm');
     const statusEl = document.getElementById('status');
     const submitBtn = document.getElementById('submitBtn');
@@ -331,35 +333,44 @@
       submitBtn.disabled = true;
       show('Invio in corso…');
 
-     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfyc.../exec';
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify({
+          q1: answer,
+          email: answer === 'SI' ? email : '',
+          ua: navigator.userAgent,
+          tsISO: new Date().toISOString()
+        })
+      })
+      .then(response => response.text())
+      .then(text => {
+        let res;
 
-fetch(WEB_APP_URL, {
-  method: 'POST',
-  body: JSON.stringify({
-    q1: answer,
-    email: answer === 'SI' ? email : '',
-    ua: navigator.userAgent,
-    tsISO: new Date().toISOString()
-  })
-})
-.then(response => response.json())
-.then(res => {
-  if (!res.ok) {
-    throw new Error(res.error || 'Errore sconosciuto');
-  }
+        try {
+          res = JSON.parse(text);
+        } catch (e) {
+          throw new Error('Risposta non valida dal server: ' + text);
+        }
 
-  show('Grazie! Risposta registrata.', 'ok');
-  submitBtn.disabled = false;
-  form.reset();
-  emailSection.classList.add('hidden');
-  emailInput.removeAttribute('required');
-  emailInput.value = '';
-})
-.catch(err => {
-  console.error(err);
-  show('Errore: ' + (err.message || err), 'err');
-  submitBtn.disabled = false;
-});
+        if (!res.ok) {
+          throw new Error(res.error || 'Errore sconosciuto');
+        }
+
+        show('Grazie! Risposta registrata.', 'ok');
+        submitBtn.disabled = false;
+        form.reset();
+        emailSection.classList.add('hidden');
+        emailInput.removeAttribute('required');
+        emailInput.value = '';
+      })
+      .catch(err => {
+        console.error(err);
+        show('Errore: ' + (err.message || err), 'err');
+        submitBtn.disabled = false;
+      });
     });
 
     resetBtn.addEventListener('click', () => {
