@@ -336,17 +336,7 @@ const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyeQV6lF5jDj8SRoFvB
   tsISO: new Date().toISOString()
 });
 
-window._lastBeacon = new Image();
-window._lastBeacon.src = WEB_APP_URL + '?' + params.toString() + '&cachebuster=' + Date.now();
-
-setTimeout(() => {
-  show('Grazie! Risposta registrata.', 'ok');
-  submitBtn.disabled = false;
-  form.reset();
-  emailSection.classList.add('hidden');
-  emailInput.removeAttribute('required');
-  emailInput.value = '';
-}, 1500);
+window.location.href = WEB_APP_URL + '?' + params.toString() + '&cachebuster=' + Date.now();
     });
 
     resetBtn.addEventListener('click', () => {
